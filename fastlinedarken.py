@@ -1,17 +1,10 @@
-# FastLineDarken.py v0.1 (2012-11-20)
+# FastLineDarken.py (2012-11-29)
 # requirements: RemoveGrain.dll(avs), mt_masktools-25.dll(avs)
 
 import vapoursynth as vs
 
-
-class InvalidArgument(Exception):
-	def __init__(self, value):
-		self.value = value
-	def __str__(self):
-		return repr(self.value)
-
 def clamp(minimum, x, maximum):
-    return int(max(minimum, min(round(x), maximum)))
+	return int(max(minimum, min(round(x), maximum)))
 
 class FastLineDarken(object):
 	def __init__(self, core):
@@ -34,43 +27,7 @@ class FastLineDarken(object):
 				lut.append(clamp(0, expr(x, y), self.max))
 		return self.std.Lut2([c1, c2], lut, planes)
 	
-	def mt_lutxy2(self, c1, c2, luma_cap, threshold, planes=0):
-		lut = []
-		for y in self.lut_range:
-			for x in self.lut_range:
-				if y < luma_cap:
-					res = y
-				else:
-					res = luma_cap
-				if res > (x + threshold):
-					if y < luma_cap:
-						res = x - y
-					else:
-						res = x - luma_cap
-				else:
-					res = 0
-				lut.append(clamp(0, res + 127, self.max))
-		return self.std.Lut2([c1, c2], lut, planes)
-	
-	def mt_lutxy3(self, c1, c2, luma_cap, threshold, strf, planes=0):
-		lut = []
-		for y in self.lut_range:
-			for x in self.lut_range:
-				if y < luma_cap:
-					res = y
-				else:
-					res = luma_cap
-				if res > (x + threshold):
-					if y < luma_cap:
-						res = x - y
-					else:
-						res = x - luma_cap
-				else:
-					res = 0
-				lut.append(clamp(0, ((res * strf) + x), self.max))
-		return self.std.Lut2([c1, c2], lut, planes)
-	
-	def fastLinedarken(self, src, strength=42, luma_cap=191, threshold=4, thinning=0):
+	def fastLinedarken(self, src, strength=48, luma_cap=191, threshold=4, thinning=0):
 		strf = float(strength)/128.0
 		thn  = float(thinning)/16.0
 		
@@ -79,14 +36,16 @@ class FastLineDarken(object):
 		self.lut_range = range(self.max + 1)
 		
 		exin     = self.inpand(self.expand(src))
-		diff     = self.mt_lutxy2(src, exin, luma_cap, threshold)
-		linemask = self.rgrain(self.mt_lut(self.inpand(diff), lambda x: ((x - 127) * thn) + 255), 20, -1)
-		thick    = self.mt_lutxy3(src, exin, luma_cap, threshold, strf)
+		expr1    = lambda x, y: ((x - y if y < luma_cap else x - luma_cap) if (y if y < luma_cap else luma_cap) > (x + threshold) else 0) + (self.mid - 1)
+		diff     = self.mt_lutxy(src, exin, expr1)
+		linemask = self.rgrain(self.mt_lut(self.inpand(diff), lambda x: ((x - (self.mid - 1)) * thn) + 255), 20, -1)
+		expr2    = lambda x, y: (((x - y if y < luma_cap else x - luma_cap) if (y if y < luma_cap else luma_cap) > (x + threshold) else 0) * strf) + x
+		thick    = self.mt_lutxy(src, exin, expr2)
 		
 		if thinning > 0:
-			expr = lambda x, y: (x + ((y - (self.mid - 1)) * (strf + 1)))
-			expa = self.expand(src, chroma='copy')
-			return self.mt_lutxy(expa, diff, expr)
+			expr3 = lambda x, y: (x + ((y - (self.mid - 1)) * (strf + 1)))
+			expa  = self.expand(src, chroma='copy')
+			return self.mt_lutxy(expa, diff, expr3)
 		else:
 			return thick
 	
@@ -94,7 +53,7 @@ class FastLineDarken(object):
 		usage = '''
 		Line darkening script for vapoursynth ported from avisynth.
 
-		fastLinedarken(clip, strength=42, luma_cap=191, threshold=4, thinning=0)
+		fastLinedarken(clip, strength=48, luma_cap=191, threshold=4, thinning=0)
 
 		Parameters are:
 		strength (integer)  - Line darkening amount, 0-256. Default 48. Represents the _maximum_ amount
