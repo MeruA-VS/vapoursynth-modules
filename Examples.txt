@@ -1,4 +1,8 @@
-Here comes a list with the dependencies for every module and an example on how to load them:
+You should put the modules in the "Lib/site-packages/" directory of your
+python installation.
+
+Here comes a list with the dependencies for every module and an example
+on how to load them:
 
 # supersampledantialiasing.py
 import vapoursynth as vs
