@@ -9,7 +9,7 @@
 import vapoursynth as vs
 
 def clamp(minimum, x, maximum):
-    return int(max(minimum, min(round(x), maximum)))
+	return int(max(minimum, min(round(x), maximum)))
 
 class EdgeCleaner(object):
 	def __init__(self, core):
@@ -22,7 +22,7 @@ class EdgeCleaner(object):
 		self.circle    = core.avs.mt_circle
 		self.defl      = core.avs.mt_deflate
 		self.levels    = core.avs.Levels
-		self.awarp     = core.avs.aWarpSharp2
+		self.awarp2    = core.avs.aWarpSharp2
 		self.deen      = core.avs.deen
 		self.point     = core.resize.Point
 		self.std       = core.std
@@ -54,7 +54,11 @@ class EdgeCleaner(object):
 		return self.mt_lutxy(c1, c2, expr, planes)
 	
 	def starmask(self, src, mode=1):
-		if mode==1:
+		self.max = 2 ** src.format.bits_per_sample - 1
+		self.mid = self.max // 2 + 1
+		self.lut_range = range(self.max + 1)
+		
+		if mode == 1:
 			clean = self.rgrain(src, 17)
 			diff  = self.mt_makediff(src, clean)
 			final = self.point(self.std.ShufflePlanes(diff, 0, vs.GRAY), format=vs.YUV420P8)
@@ -71,23 +75,24 @@ class EdgeCleaner(object):
 		return final
 
 	def edgecleaner(self, src, strength=16, rep=True, rmode=17, smode=0, hot=False):
+		smode = clamp(0, smode, 2)
+		if src.format.id != vs.YUV420P8:
+			src = self.bitdepth(clip=src, csp=vs.YUV420P8)
+		
 		self.max = 2 ** src.format.bits_per_sample - 1
 		self.mid = self.max // 2 + 1
 		self.lut_range = range(self.max + 1)
 		
-		if smode != 0:
-			strength = strength + 4
+		if smode != 0: strength = strength + 4
 		
-		main = self.awarp(c1=src, depth=strength/2, blur=1)
-		if rep == True:
-			main = self.repair(main, src, rmode)
+		main = self.awarp2(c1=src, depth=strength/2, blur=1)
+		if rep == True: main = self.repair(main, src, rmode)
 		
 		mask  = self.conv(self.mt_invert(self.edge(src, "prewitt", 4, 32, 4, 32)))
 		
 		final = self.std.MaskedMerge([src, main], mask, planes=0)
 		
-		if hot == True:
-			final = self.repair(final, src, 2)
+		if hot == True: final = self.repair(final, src, 2)
 
 		if smode != 0:
 			stmask = self.starmask(src, smode)
@@ -97,17 +102,19 @@ class EdgeCleaner(object):
 	
 	def usage(self):
 		usage = '''
-		A simple edge cleaning and weak dehaloing function ported to vapoursynth.
-
-		Parameters:
-		strength (float)      - specifies edge denoising strength (8.0)
-		rep (boolean)         - actives Repair for the aWarpSharped clip (true; requires Repair)
-		rmode (integer)       - specifies the Repair mode; 1 is very mild and good for halos, 
-					16 and 18 are good for edge structure preserval on strong settings but keep more halos and edge noise, 
-					17 is similar to 16 but keeps much less haloing, other modes are not recommended (17; requires Repair)
-		smode (integer)       - specifies what method will be used for finding small particles, ie stars; 0 is disabled, 
-					1 uses RemoveGrain and 2 uses Deen (0; requires RemoveGrain/Repair/Deen)
-		hot (boolean)         - specifies whether removal of hot pixels should take place (false)
-		fix (boolean)         - fixes an aWarpSharp bug by overlaying a healthy pixel from the source clip; 
-					good idea to set to false when over-cropping afterwards (true)
+		A simple edge cleaning and weak dehaloing function ported to vapoursynth. Ported from:
+		http://pastebin.com/7TCR7W4x
+		
+		edgecleaner(src, strength=16, rep=True, rmode=17, smode=0, hot=False)
+			strength (float)      - specifies edge denoising strength (8.0)
+			rep (boolean)         - actives Repair for the aWarpSharped clip (true; requires Repair).
+			rmode (integer)       - specifies the Repair mode; 1 is very mild and good for halos, 
+						16 and 18 are good for edge structure preserval 
+						on strong settings but keep more halos and edge noise,
+						17 is similar to 16 but keeps much less haloing,
+						other modes are not recommended (17; requires Repair).
+			smode (integer)       - specifies what method will be used for finding small particles,
+						ie stars; 0 is disabled, 1 uses RemoveGrain and 2 uses Deen 
+						(0; requires RemoveGrain/Repair/Deen).
+			hot (boolean)         - specifies whether removal of hot pixels should take place (false).
 		'''
