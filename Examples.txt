@@ -18,7 +18,6 @@ aa = supersampledantialiasing.SupersampledAntialiasing(core)
 # stuff happens
 clip = aa.ssaa(src)
 
-
 # fastlinedarken.py
 import vapoursynth as vs
 import sys
@@ -29,7 +28,6 @@ core.avs.LoadPlugin(path=r'RemoveGrainSSE2.dll')
 ld = fastlinedarken.FastLineDarken(core)
 # stuff happens
 clip = ld.fastlinedarken(src)
-
 
 # edgecleaner.py
 import vapoursynth as vs
@@ -45,7 +43,6 @@ core.avs.LoadPlugin(path=r'aWarpSharp.dll')
 ec = edgecleaner.EdgeCleaner(core)
 # stuff happens
 clip = ec.edgecleaner(src)
-
 
 # dehalo_alpha.py
 import vapoursynth as vs
@@ -73,7 +70,6 @@ core.avs.LoadPlugin(path=r'RemoveGrainHD.dll')
 cs = contrasharpening.ContraSharpening(core)
 # stuff happens
 clip = cs.contrasharpening(filtered_clip, unfiltered_clip)
-
 
 # rangeutils.py
 import vapoursynth as vs
