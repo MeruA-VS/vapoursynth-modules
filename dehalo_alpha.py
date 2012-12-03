@@ -1,9 +1,9 @@
-# dehalo_alpha.py (2012-12-02)
-# requirements: mt_masktools.dll(avs)
-#		RemoveGrain.dll(avs)
-#		RemoveGrainHD.dll(avs)
-#               Repair.dll(avs)
-#               fmtconv.dll(vs)
+# dehalo_alpha.py (2012-12-03)
+# Dependencies: mt_masktools.dll (avs)
+#		RemoveGrain.dll (avs)
+#		RemoveGrainHD.dll (avs)
+#		Repair.dll (avs)
+#		fmtconv.dll (vs)
 
 import vapoursynth as vs
 

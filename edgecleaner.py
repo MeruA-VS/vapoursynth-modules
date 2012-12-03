@@ -1,10 +1,10 @@
-# EdgeCleaner.py (2012-11-24)
-# requirements: RemoveGrain.dll(avs)
-#		repair.dll(avs)
-#		mt_masktools-25.dll(avs)
-#		deen.dll(avs)
-#		avisynthfilters.dll(avs)
-#		aWarpSharp2.dll(avs)
+# EdgeCleaner.py (2012-12-03)
+# Dependencies: RemoveGrain.dll (avs)
+#		repair.dll (avs)
+#		mt_masktools-25.dll (avs)
+#		deen.dll (avs)
+#		avisynthfilters.dll (avs)
+#		aWarpSharp2.dll (avs)
 
 import vapoursynth as vs
 
@@ -64,13 +64,13 @@ class EdgeCleaner(object):
 			final = self.point(self.std.ShufflePlanes(diff, 0, vs.GRAY), format=vs.YUV420P8)
 			final = self.levels(final, 40, 0.350, 168, 0, 255)
 			final = self.rgrain(final, 7, -1)
-			final = self.edge(final, "prewitt", 4, 16, 4, 16)
+			final = self.edge(final, 'prewitt', 4, 16, 4, 16)
 		else:
-			clean  = self.rgrain(self.repair(self.deen(src, "a3d", 4, 12, 0), src, 15), 21)
-			pmask  = self.mt_invert(self.expand(self.edge(src, "roberts", 0, 2, 0, 2), mode=self.circle(1)))
+			clean  = self.rgrain(self.repair(self.deen(src, 'a3d', 4, 12, 0), src, 15), 21)
+			pmask  = self.mt_invert(self.expand(self.edge(src, 'roberts', 0, 2, 0, 2), mode=self.circle(1)))
 			fmask  = self.std.MaskedMerge([clean, src], pmask)
 			subt   = self.subtract(fmask, src)
-			final  = self.defl(self.edge(subt, "roberts", 0, 0, 0, 0))
+			final  = self.defl(self.edge(subt, 'roberts', 0, 0, 0, 0))
 		
 		return final
 
@@ -88,7 +88,7 @@ class EdgeCleaner(object):
 		main = self.awarp2(c1=src, depth=strength/2, blur=1)
 		if rep == True: main = self.repair(main, src, rmode)
 		
-		mask  = self.conv(self.mt_invert(self.edge(src, "prewitt", 4, 32, 4, 32)))
+		mask  = self.conv(self.mt_invert(self.edge(src, 'prewitt', 4, 32, 4, 32)))
 		
 		final = self.std.MaskedMerge([src, main], mask, planes=0)
 		
@@ -118,3 +118,4 @@ class EdgeCleaner(object):
 						(0; requires RemoveGrain/Repair/Deen).
 			hot (boolean)         - specifies whether removal of hot pixels should take place (false).
 		'''
+		return usage

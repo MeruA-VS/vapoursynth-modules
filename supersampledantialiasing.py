@@ -1,9 +1,9 @@
-# supersampledantialiasing.py (2012-12-01)
-# requirements: mt_masktools.dll(avs)
-#               SangNom.dll(avs)
-#               fmtconv.dll(vs)
-#               RemoveGrain.dll(avs)
-#               Repair.dll(avs)
+# supersampledantialiasing.py (2012-12-03)
+# Dependencies: mt_masktools.dll (avs)
+#		SangNom.dll (avs)
+#		RemoveGrain.dll (avs)
+#		Repair.dll (avs)
+#		fmtconv.dll (vs)
 
 import vapoursynth as vs
 
@@ -71,7 +71,7 @@ class SupersampledAntialiasing(object):
 		aac  = self.bitdepth(clip=self.resample(clip, fw*2, fh*2), csp=vs.YUV420P8)
 		aac  = self.std.Transpose(self.snom(c1=aac))
 		aac  = self.std.Transpose(self.snom(c1=aac))
-		aac  = self.bitdepth(clip=self.resample(aac, fw, fh, kernel='blackman'), csp=vs.YUV420P8)
+		aac  = self.bitdepth(clip=self.resample(aac, fw, fh), csp=vs.YUV420P8)
 		
 		if sharpen == True:
 			self.max       = 2 ** clip.format.bits_per_sample - 1

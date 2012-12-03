@@ -1,5 +1,6 @@
-# FastLineDarken.py (2012-11-29)
-# requirements: RemoveGrain.dll(avs), mt_masktools-25.dll(avs)
+# FastLineDarken.py (2012-12-03)
+# Dependencies: RemoveGrain.dll (avs)
+#		mt_masktools-25.dll (avs)
 
 import vapoursynth as vs
 
@@ -52,9 +53,9 @@ class FastLineDarken(object):
 	def usage(self):
 		usage = '''
 		Line darkening script for vapoursynth ported from avisynth.
-
+		
 		fastLinedarken(clip, strength=48, luma_cap=191, threshold=4, thinning=0)
-
+		
 		Parameters are:
 		strength (integer)  - Line darkening amount, 0-256. Default 48. Represents the _maximum_ amount
 				that the luma will be reduced by, weaker lines will be reduced by
