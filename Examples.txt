@@ -73,3 +73,16 @@ core.avs.LoadPlugin(path=r'RemoveGrainHD.dll')
 cs = contrasharpening.ContraSharpening(core)
 # stuff happens
 clip = cs.contrasharpening(filtered_clip, unfiltered_clip)
+
+
+# rangeutils.py
+import vapoursynth as vs
+import sys
+import rangeutils
+core = vs.Core()
+ru = rangeutils.RangeUtils(core)
+# stuff happens
+clip = ru.replacerangeclip1, clip2, start, end)
+clip = ru.deleterange(src, start, end)
+clip = ru.freezeloop(src, start, end, loopStart, loopEnd)
+clip = ru.blankit(src, start, end)
