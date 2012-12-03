@@ -82,7 +82,7 @@ import rangeutils
 core = vs.Core()
 ru = rangeutils.RangeUtils(core)
 # stuff happens
-clip = ru.replacerangeclip1, clip2, start, end)
+clip = ru.replacerange(clip1, clip2, start, end)
 clip = ru.deleterange(src, start, end)
 clip = ru.freezeloop(src, start, end, loopStart, loopEnd)
 clip = ru.blankit(src, start, end)
