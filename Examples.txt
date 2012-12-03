@@ -69,6 +69,7 @@ import contrasharpening
 core = vs.Core()
 core.avs.LoadPlugin(path=r'RepairSSE2.dll')
 core.avs.LoadPlugin(path=r'RemoveGrainSSE2.dll')
+core.avs.LoadPlugin(path=r'RemoveGrainHD.dll')
 cs = contrasharpening.ContraSharpening(core)
 # stuff happens
 clip = cs.contrasharpening(filtered_clip, unfiltered_clip)
