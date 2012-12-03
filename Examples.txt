@@ -60,7 +60,7 @@ core.avs.LoadPlugin(path=r'RemoveGrainHD.dll')
 dh = dehalo_alpha.DeHalo_alpha(core)
 # stuff happens
 clip = dh.dehalo_alpha(src)
-
+clip = dh.yahr(src)
 
 # contrasharpening.py
 import vapoursynth as vs
