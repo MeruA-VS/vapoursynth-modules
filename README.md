@@ -8,6 +8,7 @@ The functions contained in every script are as listed below:
   * nediAA
   * naa
   * dehalo_alpha
+  * yahr
   * fastlinedarken
   * contrasharpening
   * RemoveDirt
@@ -33,7 +34,7 @@ python installation.
 And then:
 ```Python
 import vapoursynth as vs
-import workshop
+import scoll
 core = vs.get_core()
 sc = scoll.SColl()
 #...
